@@ -1,6 +1,9 @@
 // src/app/components/chamber-telemetry/chamber-telemetry.component.ts
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit } from '@angular/core';
+import { CommonModule } from '@angular/common';
 import { ActivatedRoute } from '@angular/router';
+import { ReactiveFormsModule } from '@angular/forms';
+import { BaseChartDirective } from 'ng2-charts';
 import { interval, Subscription } from 'rxjs';
 import { Chamber } from '../../models/chamber.model';
 import { ChamberTelemetry } from '../../models/chamber-telemetry.model';
@@ -9,10 +12,12 @@ import { Location } from '@angular/common';
 
 @Component({
   selector: 'app-chamber-telemetry',
+  standalone: true,
+  imports: [CommonModule, ReactiveFormsModule, BaseChartDirective],
   templateUrl: './chamber-telemetry.component.html',
   styleUrls: ['./chamber-telemetry.component.scss']
 })
-export class ChamberTelemetryComponent implements OnInit, OnDestroy {
+export class ChamberTelemetryComponent implements OnInit {
   chamber: Chamber | null = null;
   telemetry: ChamberTelemetry | null = null;
   telemetryHistory: ChamberTelemetry[] = [];

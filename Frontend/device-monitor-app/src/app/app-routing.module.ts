@@ -19,8 +19,10 @@ const routes: Routes = [
   // Create new chamber page
   { path: 'chambers/new', component: ChamberCreateComponent },
   
-  // Chamber detail and telemetry routes
+  // Chamber detail page
   { path: 'chambers/:id', component: ChamberDetailComponent },
+
+  // Chamber telemetry page
   { path: 'chambers/:id/telemetry', component: ChamberTelemetryComponent },
   
   // Fallback route - redirect to chambers list

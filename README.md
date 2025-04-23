@@ -16,7 +16,7 @@ The frontend is built in Angular and consumes a RESTful API built with .NET 9 We
 🛠 Tech Stack
 
 * Frontend (Angular)
-    * Angular 15+
+    * Angular 19+
     * Bootstrap for styling
     * RxJS for handling observables (e.g. real-time simulation)
     * Chart.js (for telemetry visualization)

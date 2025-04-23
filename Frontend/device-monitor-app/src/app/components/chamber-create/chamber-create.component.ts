@@ -1,5 +1,6 @@
 import { Component } from '@angular/core';
-import { FormBuilder, FormGroup, Validators } from '@angular/forms';
+import { CommonModule } from '@angular/common';
+import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { ChamberService } from '../../services/chamber.service';
 import { Chamber, ChamberStatus } from '../../models/chamber.model';
@@ -7,7 +8,12 @@ import { Chamber, ChamberStatus } from '../../models/chamber.model';
 @Component({
   selector: 'app-chamber-create',
   templateUrl: './chamber-create.component.html',
-  styleUrl: './chamber-create.component.scss'
+  styleUrl: './chamber-create.component.scss',
+  standalone: true,
+  imports: [
+    CommonModule,
+    ReactiveFormsModule
+  ],
 })
 export class ChamberCreateComponent {
   // Reactive form group for chamber creation

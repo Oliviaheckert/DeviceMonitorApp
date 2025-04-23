@@ -1,8 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "LQPSylBo9aU=",
+  "dgSpecHash": "ApWXHUwNt3s=",
   "success": true,
-  "projectFilePath": "C:\\Users\\olivi\\OneDrive\\Documents\\projects\\DeviceMonitor\\Backend\\DeviceMonitor.API\\DeviceMonitor.API.csproj",
+  "projectFilePath": "C:\\projects\\DeviceMonitor\\Backend\\DeviceMonitor.API\\DeviceMonitor.API.csproj",
   "expectedPackageFiles": [
     "C:\\Users\\olivi\\.nuget\\packages\\microsoft.aspnetcore.openapi\\9.0.4\\microsoft.aspnetcore.openapi.9.0.4.nupkg.sha512",
     "C:\\Users\\olivi\\.nuget\\packages\\microsoft.openapi\\1.6.17\\microsoft.openapi.1.6.17.nupkg.sha512"

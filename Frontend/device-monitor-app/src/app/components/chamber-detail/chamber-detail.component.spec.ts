@@ -8,10 +8,12 @@ describe('ChamberDetailComponent', () => {
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      imports: [ChamberDetailComponent]
+      declarations: [ChamberDetailComponent] // Make sure ChamberDetailComponent is declared here
     })
     .compileComponents();
+  });
 
+  beforeEach(() => {
     fixture = TestBed.createComponent(ChamberDetailComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
