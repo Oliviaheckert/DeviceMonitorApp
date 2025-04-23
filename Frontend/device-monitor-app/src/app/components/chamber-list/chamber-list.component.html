@@ -1,0 +1,81 @@
+<p>chamber-list works!</p>
+<!-- Main container with top margin -->
+<div class="container mt-4">
+    <h2>Test Chambers</h2>
+    
+    <!-- Loading spinner - shown while data is loading -->
+    <div *ngIf="loading" class="text-center">
+      <div class="spinner-border" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  
+    <!-- Error message - shown if API request fails -->
+    <div *ngIf="error" class="alert alert-danger">
+      {{ error }}
+    </div>
+  
+    <!-- Content section - shown when data is loaded -->
+    <div *ngIf="!loading && !error">
+      <!-- Add button to create new chambers -->
+      <div class="mb-3">
+        <a [routerLink]="['/chambers/new']" class="btn btn-primary">
+          <i class="bi bi-plus-circle"></i> Add New Chamber
+        </a>
+      </div>
+  
+      <!-- Chambers table -->
+      <div class="table-responsive">
+        <table class="table table-striped table-hover">
+          <thead>
+            <tr>
+              <th>ID</th>
+              <th>Name</th>
+              <th>Type</th>
+              <th>Status</th>
+              <th>Last Maintenance</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <!-- Loop through chambers using Angular's ngFor directive -->
+            <tr *ngFor="let chamber of chambers">
+              <td>{{ chamber.id }}</td>
+              <td>{{ chamber.name }}</td>
+              <td>{{ chamber.type }}</td>
+              <td>
+                <!-- Status badge with dynamic CSS classes -->
+                <span class="badge rounded-pill"
+                      [ngClass]="{
+                        'bg-success': chamber.status === 'Running',
+                        'bg-warning': chamber.status === 'Idle',
+                        'bg-danger': chamber.status === 'Error',
+                        'bg-secondary': chamber.status === 'Offline',
+                        'bg-info': chamber.status === 'Maintenance'
+                      }">
+                  {{ chamber.status }}
+                </span>
+              </td>
+              <td>{{ chamber.lastMaintenance | date:'mediumDate' }}</td>
+              <td>
+                <!-- Action buttons -->
+                <div class="btn-group btn-group-sm">
+                  <a [routerLink]="['/chambers', chamber.id]" class="btn btn-outline-primary">
+                    <i class="bi bi-eye"></i> View
+                  </a>
+                  <a [routerLink]="['/chambers', chamber.id, 'telemetry']" class="btn btn-outline-info">
+                    <i class="bi bi-graph-up"></i> Telemetry
+                  </a>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+  
+      <!-- Message when no chambers exist -->
+      <div *ngIf="chambers.length === 0" class="alert alert-info">
+        No chambers found. Add a new chamber to get started.
+      </div>
+    </div>
+  </div>

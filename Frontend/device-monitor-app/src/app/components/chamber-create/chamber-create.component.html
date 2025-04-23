@@ -1,0 +1,99 @@
+<p>chamber-create works!</p>
+<div class="container mt-4">
+    <h2>Add New Test Chamber</h2>
+    
+    <!-- Show error message if there was a problem -->
+    <div *ngIf="error" class="alert alert-danger">
+      {{ error }}
+    </div>
+    
+    <!-- Reactive form for creating a chamber -->
+    <form [formGroup]="chamberForm" (ngSubmit)="onSubmit()">
+      <!-- Chamber Name field -->
+      <div class="mb-3">
+        <label for="name" class="form-label">Chamber Name</label>
+        <input 
+          type="text" 
+          class="form-control" 
+          id="name" 
+          formControlName="name"
+          [ngClass]="{'is-invalid': submitted && chamberForm.controls['name'].errors}">
+        <!-- Validation error messages -->
+        <div class="invalid-feedback" *ngIf="submitted && chamberForm.controls['name'].errors">
+          <div *ngIf="chamberForm.controls['name'].errors['required']">Chamber name is required</div>
+          <div *ngIf="chamberForm.controls['name'].errors['maxlength']">Chamber name cannot exceed 100 characters</div>
+        </div>
+      </div>
+      
+      <!-- Chamber Type field -->
+      <div class="mb-3">
+        <label for="type" class="form-label">Chamber Type</label>
+        <select 
+          class="form-select" 
+          id="type" 
+          formControlName="type"
+          [ngClass]="{'is-invalid': submitted && chamberForm.controls['type'].errors}">
+          <option value="">Select a type</option>
+          <option value="Environmental">Environmental</option>
+          <option value="Thermal">Thermal</option>
+          <option value="Humidity">Humidity</option>
+          <option value="Pressure">Pressure</option>
+          <option value="Combined">Combined</option>
+        </select>
+        <!-- Validation error message -->
+        <div class="invalid-feedback" *ngIf="submitted && chamberForm.controls['type'].errors">
+          <div *ngIf="chamberForm.controls['type'].errors['required']">Chamber type is required</div>
+        </div>
+      </div>
+      
+      <!-- Active checkbox -->
+      <div class="mb-3 form-check">
+        <input 
+          type="checkbox" 
+          class="form-check-input" 
+          id="isActive" 
+          formControlName="isActive">
+        <label class="form-check-label" for="isActive">Active</label>
+      </div>
+      
+      <!-- Last Maintenance date field -->
+      <div class="mb-3">
+        <label for="lastMaintenance" class="form-label">Last Maintenance Date</label>
+        <input 
+          type="date" 
+          class="form-control" 
+          id="lastMaintenance" 
+          formControlName="lastMaintenance"
+          [ngClass]="{'is-invalid': submitted && chamberForm.controls['lastMaintenance'].errors}">
+        <!-- Validation error message -->
+        <div class="invalid-feedback" *ngIf="submitted && chamberForm.controls['lastMaintenance'].errors">
+          <div *ngIf="chamberForm.controls['lastMaintenance'].errors['required']">Maintenance date is required</div>
+        </div>
+      </div>
+      
+      <!-- Status dropdown -->
+      <div class="mb-3">
+        <label for="status" class="form-label">Status</label>
+        <select 
+          class="form-select" 
+          id="status" 
+          formControlName="status"
+          [ngClass]="{'is-invalid': submitted && chamberForm.controls['status'].errors}">
+          <option *ngFor="let status of chamberStatusOptions" [value]="status">{{ status }}</option>
+        </select>
+        <!-- Validation error message -->
+        <div class="invalid-feedback" *ngIf="submitted && chamberForm.controls['status'].errors">
+          <div *ngIf="chamberForm.controls['status'].errors['required']">Status is required</div>
+        </div>
+      </div>
+      
+      <!-- Form buttons -->
+      <div class="mb-3">
+        <button type="submit" class="btn btn-primary me-2" [disabled]="loading">
+          <span *ngIf="loading" class="spinner-border spinner-border-sm me-1" role="status" aria-hidden="true"></span>
+          Save Chamber
+        </button>
+        <a routerLink="/chambers" class="btn btn-outline-secondary">Cancel</a>
+      </div>
+    </form>
+  </div>

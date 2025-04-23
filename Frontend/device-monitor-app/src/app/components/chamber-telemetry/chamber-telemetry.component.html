@@ -1,0 +1,245 @@
+<!-- src/app/components/chamber-telemetry/chamber-telemetry.component.html -->
+<div class="container mt-4">
+    <!-- Loading indicator -->
+    <div *ngIf="loading && !chamber" class="text-center">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">Loading...</span>
+      </div>
+    </div>
+  
+    <!-- Error message -->
+    <div *ngIf="error" class="alert alert-danger">
+      <p>{{ error }}</p>
+      <button (click)="loadChamber()" class="btn btn-outline-danger">Try Again</button>
+    </div>
+  
+    <!-- Telemetry data -->
+    <div *ngIf="chamber">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <h2>Chamber Telemetry: {{ chamber.name }}</h2>
+        <div>
+          <button (click)="goBack()" class="btn btn-outline-secondary">
+            <i class="bi bi-arrow-left"></i> Back
+          </button>
+        </div>
+      </div>
+      
+      <!-- Chamber status indicator -->
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white">
+          <h3 class="card-title mb-0">Chamber Status</h3>
+        </div>
+        <div class="card-body">
+          <div class="row text-center">
+            <div class="col-md-4">
+              <h5>Type</h5>
+              <p class="lead">{{ chamber.type }}</p>
+            </div>
+            <div class="col-md-4">
+              <h5>Status</h5>
+              <p>
+                <span class="badge rounded-pill" 
+                      [ngClass]="{
+                        'bg-success': chamber.status === 'Running',
+                        'bg-warning': chamber.status === 'Idle',
+                        'bg-danger': chamber.status === 'Error',
+                        'bg-secondary': chamber.status === 'Offline',
+                        'bg-info': chamber.status === 'Maintenance'
+                      }">
+                  {{ chamber.status }}
+                </span>
+              </p>
+            </div>
+            <div class="col-md-4">
+              <h5>Last Maintenance</h5>
+              <p>{{ chamber.lastMaintenance | date:'mediumDate' }}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Current readings -->
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-primary text-white d-flex justify-content-between align-items-center">
+          <h3 class="card-title mb-0">Current Readings</h3>
+          <div *ngIf="loading" class="spinner-border spinner-border-sm text-white" role="status">
+            <span class="visually-hidden">Loading...</span>
+          </div>
+        </div>
+        <div class="card-body" *ngIf="telemetry">
+          <div class="row g-3">
+            <!-- Temperature -->
+            <div class="col-md-6 col-lg-3">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                  <h5 class="card-title text-muted">Temperature</h5>
+                  <p class="display-4 mb-0" [ngClass]="{'text-danger': telemetry.temperature > 50, 'text-warning': telemetry.temperature > 30, 'text-info': telemetry.temperature < 0}">
+                    {{ telemetry.temperature | number:'1.1-1' }}°C
+                  </p>
+                  <div class="progress mt-2">
+                    <div [ngClass]="getTempStatus(telemetry.temperature)" class="progress-bar" 
+                         [style.width.%]="telemetry.temperature"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Humidity -->
+            <div class="col-md-6 col-lg-3">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                  <h5 class="card-title text-muted">Humidity</h5>
+                  <p class="display-4 mb-0" [ngClass]="{'text-danger': telemetry.humidity < 20, 'text-warning': telemetry.humidity > 80}">
+                    {{ telemetry.humidity | number:'1.1-1' }}%
+                  </p>
+                  <div class="progress mt-2">
+                    <div [ngClass]="getHumidityStatus(telemetry.humidity)" class="progress-bar" 
+                         [style.width.%]="telemetry.humidity"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Pressure -->
+            <div class="col-md-6 col-lg-3">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                  <h5 class="card-title text-muted">Pressure</h5>
+                  <p class="display-4 mb-0" [ngClass]="{'text-warning': !isValueInRange(telemetry.pressure, 990, 1030)}">
+                    {{ telemetry.pressure | number:'1.1-1' }} hPa
+                  </p>
+                  <div class="progress mt-2">
+                    <div [ngClass]="getPressureStatus(telemetry.pressure)" class="progress-bar" 
+                         [style.width.%]="((telemetry.pressure - 980) / 60) * 100"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Voltage -->
+            <div class="col-md-6 col-lg-3">
+              <div class="card h-100 border-0 shadow-sm">
+                <div class="card-body text-center">
+                  <h5 class="card-title text-muted">Voltage</h5>
+                  <p class="display-4 mb-0" [ngClass]="{'text-danger': telemetry.voltage < 5, 'text-warning': telemetry.voltage > 20}">
+                    {{ telemetry.voltage | number:'1.1-1' }} V
+                  </p>
+                  <div class="progress mt-2">
+                    <div [ngClass]="getVoltageStatus(telemetry.voltage)" class="progress-bar" 
+                         [style.width.%]="(telemetry.voltage / 24) * 100"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+            
+            <!-- Last updated timestamp -->
+            <div class="col-12 text-end text-muted">
+              Last updated: {{ telemetry.timestamp | date:'medium' }}
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- Charts -->
+      <div class="row g-4 mb-4">
+        <!-- Temperature Chart -->
+        <div class="col-md-6">
+          <div class="card h-100 shadow-sm">
+            <div class="card-header bg-light">
+              <h5 class="card-title mb-0">Temperature History</h5>
+            </div>
+            <div class="card-body">
+              <canvas baseChart 
+                      height="250"
+                      [data]="tempChartData"
+                      [options]="chartOptions"
+                      type="line">
+              </canvas>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Humidity Chart -->
+        <div class="col-md-6">
+          <div class="card h-100 shadow-sm">
+            <div class="card-header bg-light">
+              <h5 class="card-title mb-0">Humidity History</h5>
+            </div>
+            <div class="card-body">
+              <canvas baseChart 
+                      height="250"
+                      [data]="humidityChartData"
+                      [options]="chartOptions"
+                      type="line">
+              </canvas>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Pressure Chart -->
+        <div class="col-md-6">
+          <div class="card h-100 shadow-sm">
+            <div class="card-header bg-light">
+              <h5 class="card-title mb-0">Pressure History</h5>
+            </div>
+            <div class="card-body">
+              <canvas baseChart 
+                      height="250"
+                      [data]="pressureChartData"
+                      [options]="chartOptions"
+                      type="line">
+              </canvas>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Voltage Chart -->
+        <div class="col-md-6">
+          <div class="card h-100 shadow-sm">
+            <div class="card-header bg-light">
+              <h5 class="card-title mb-0">Voltage History</h5>
+            </div>
+            <div class="card-body">
+              <canvas baseChart 
+                      height="250"
+                      [data]="voltageChartData"
+                      [options]="chartOptions"
+                      type="line">
+              </canvas>
+            </div>
+          </div>
+        </div>
+      </div>
+      
+      <!-- History table -->
+      <div class="card mb-4 shadow-sm">
+        <div class="card-header bg-light">
+          <h5 class="card-title mb-0">Telemetry History</h5>
+        </div>
+        <div class="card-body">
+          <div class="table-responsive">
+            <table class="table table-sm table-striped">
+              <thead>
+                <tr>
+                  <th>Timestamp</th>
+                  <th>Temperature</th>
+                  <th>Humidity</th>
+                  <th>Pressure</th>
+                  <th>Voltage</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr *ngFor="let item of telemetryHistory">
+                  <td>{{ item.timestamp | date:'medium' }}</td>
+                  <td>{{ item.temperature | number:'1.1-1' }}°C</td>
+                  <td>{{ item.humidity | number:'1.1-1' }}%</td>
+                  <td>{{ item.pressure | number:'1.1-1' }} hPa</td>
+                  <td>{{ item.voltage | number:'1.1-1' }} V</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
